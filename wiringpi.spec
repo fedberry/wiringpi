@@ -9,7 +9,7 @@ Summary:	WiringPi is a Wiring library written in C and should be usable from C++
 License:	GPLv3
 URL:		https://git.drogon.net/?p=wiringPi
 #Source0:	https://git.drogon.net/?p=wiringPi;a=snapshot;h=refs/heads/master;sf=tgz
-Source0:	wiringPi-%{commit_short}.tar.xz
+Source0:	https://git.drogon.net/?p=wiringPi;a=snapshot;h=%{commit_long};sf=tgz#/wiringPi-%{commit_short}.tar.gz
 Patch0:		wiringPi-make.patch
 ExclusiveArch:	armv7hl
 
@@ -65,7 +65,7 @@ popd
 
 %post -p /sbin/ldconfig
 %postun -p /sbin/ldconfig
- 
+
 %files
 %defattr(-,root,root,-)
 %doc COPYING.LESSER INSTALL People README.TXT VERSION
