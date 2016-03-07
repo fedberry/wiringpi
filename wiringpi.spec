@@ -17,7 +17,7 @@ ExclusiveArch:	armv7hl
 WiringPi is a Wiring library written in C and should be usable from C++.
 
 %prep
-%setup -q -c -n wiringPi-%{commit_short}
+%setup -q -n wiringPi-%{commit_short}
 %patch0 -p1 -b .orig
 
 %build
