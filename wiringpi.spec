@@ -1,8 +1,8 @@
-%global commit_long     b0a60c3302973ca1878d149d61f2f612c8f27fac
+%global commit_long     b1dfc186efe327aa1d59de43ef631a2fa24e7c95
 %global commit_short    %(c=%{commit_long}; echo ${c:0:7})
 
 Name:		wiringpi
-Version:	2.32
+Version:	2.36
 Release:	1.%{commit_short}%{dist}
 Summary:	WiringPi is a Wiring library written in C and should be usable from C++.
 
@@ -11,7 +11,7 @@ URL:		https://git.drogon.net/?p=wiringPi
 #Source0:	https://git.drogon.net/?p=wiringPi;a=snapshot;h=refs/heads/master;sf=tgz
 Source0:	https://git.drogon.net/?p=wiringPi;a=snapshot;h=%{commit_long};sf=tgz#/wiringPi-%{commit_short}.tar.gz
 Patch0:		wiringPi-make.patch
-ExclusiveArch:	armv7hl
+ExclusiveArch: %{arm}
 
 %description
 WiringPi is a Wiring library written in C and should be usable from C++.
@@ -76,6 +76,10 @@ popd
 %{_mandir}/man1/*.1.*
 
 %changelog
+* Mon Jan 02 2017 Vaughan <devel at agrez.net> - 2.36-1.b1dfc18
+- New release 2.36 (git snapshot: b1dfc186efe327aa1d59de43ef631a2fa24e7c95)
+- Don't limit Exclusive arch to just armv7hl
+
 * Mon Mar 07 2016 Vaughan <devel at agrez.net> - 2.32-1.b0a60c3
 - New release 2.32 (git snapshot: b0a60c3302973ca1878d149d61f2f612c8f27fac)
 
