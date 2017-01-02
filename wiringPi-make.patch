@@ -1,6 +1,6 @@
 --- a/devLib/Makefile	2015-09-08 16:30:40.000000000 +0100
 +++ b/devLib/Makefile	2015-09-08 16:58:18.569199557 +0100
-@@ -31,7 +31,7 @@
+@@ -37,7 +37,7 @@
  #DEBUG	= -g -O0
  DEBUG	= -O2
  CC	= gcc
@@ -9,15 +9,15 @@
  DEFS	= -D_GNU_SOURCE
  CFLAGS	= $(DEBUG) $(DEFS) -Wformat=2 -Wall -Winline $(INCLUDE) -pipe -fPIC
  
-@@ -61,6 +61,7 @@
- $(DYNAMIC):	$(OBJ)
- 	$Q echo "[Link (Dynamic)]"
- 	$Q $(CC) -shared -Wl,-soname,libwiringPiDev.so$(WIRINGPI_SONAME_SUFFIX) -o libwiringPiDev.so.$(VERSION) -lpthread $(OBJ)
-+	@ln -sf libwiringPiDev.so.$(VERSION) libwiringPiDev.so
- 
+@@ -73,6 +73,7 @@
  .c.o:
  	$Q echo [Compile] $<
-@@ -107,6 +108,15 @@
+ 	$Q $(CC) -c $(CFLAGS) $< -o $@
++	@ln -sf libwiringPiDev.so.$(VERSION) libwiringPiDev.so
+ 
+ .PHONY:	clean
+ clean:
+@@ -113,6 +114,15 @@
  	install -m 0755 libwiringPiDev.so.$(VERSION)				~/wiringPi/debian-template/wiringPi/usr/lib/libwiringPiDev.so.$(VERSION)
  	ln -sf ~/wiringPi/debian-template/wiringPi/usr/lib/libwiringPiDev.so.$(VERSION)	~/wiringPi/debian-template/wiringPi/usr/lib/libwiringPiDev.so
  
@@ -36,31 +36,31 @@
 --- a/gpio/Makefile	2015-09-08 16:30:40.000000000 +0100
 +++ b/gpio/Makefile	2015-09-08 16:46:06.687665762 +0100
 @@ -80,6 +80,14 @@
- 	$Q install -m 0755 -d							~/wiringPi/debian-template/wiringPi/usr/bin
- 	$Q install -m 0755 gpio							~/wiringPi/debian-template/wiringPi/usr/bin
+ 	$Q mkdir -p		$(DESTDIR)$(PREFIX)/man/man1
+ 	$Q cp gpio.1		$(DESTDIR)$(PREFIX)/man/man1
  
 +.PHONY:        install-fedora
-+install-fedora: gpio
++install-fedora:        gpio
 +	@echo "[Install]"
 +	@install -m 0755 -d	$(DESTDIR)$(PREFIX)/bin
 +	@install -m 0755 gpio	$(DESTDIR)$(PREFIX)/bin
 +	@mkdir -p		$(DESTDIR)$(PREFIX)/share/man/man1
 +	@install -m 0644 gpio.1	$(DESTDIR)$(PREFIX)/share/man/man1
 +
- .PHONY:	uninstall
- uninstall:
- 	$Q echo "[UnInstall]"
+ .PHONY:	install-deb
+ install-deb:	gpio
+ 	$Q echo "[Install: deb]"
 --- a/wiringPi/Makefile	2015-09-08 18:05:24.032753612 +0100
 +++ b/wiringPi/Makefile	2015-09-08 18:05:46.012500667 +0100
-@@ -84,6 +84,7 @@
- $(DYNAMIC):	$(OBJ)
- 	$Q echo "[Link (Dynamic)]"
- 	$Q $(CC) -shared -Wl,-soname,libwiringPi.so$(WIRINGPI_SONAME_SUFFIX) -o libwiringPi.so.$(VERSION) -lpthread $(OBJ)
-+	@ln -sf libwiringPi.so.$(VERSION) libwiringPi.so
- 
+@@ -83,6 +83,7 @@
  .c.o:
  	$Q echo [Compile] $<
-@@ -131,6 +132,15 @@
+ 	$Q $(CC) -c $(CFLAGS) $< -o $@
++	@ln -sf libwiringPi.so.$(VERSION) libwiringPi.so
+ 
+ 
+ .PHONY:	clean
+@@ -137,6 +138,15 @@
  	install -m 0755 libwiringPi.so.$(VERSION)				~/wiringPi/debian-template/wiringPi/usr/lib/libwiringPi.so.$(VERSION)
  	ln -sf ~/wiringPi/debian-template/wiringPi/usr/lib/libwiringPi.so.$(VERSION)	~/wiringPi/debian-template/wiringPi/usr/lib/libwiringPi.so
  
