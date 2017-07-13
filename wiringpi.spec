@@ -1,8 +1,8 @@
-%global commit_long     b1dfc186efe327aa1d59de43ef631a2fa24e7c95
+%global commit_long     96344ff7125182989f98d3be8d111952a8f74e15
 %global commit_short    %(c=%{commit_long}; echo ${c:0:7})
 
 Name:		wiringpi
-Version:	2.36
+Version:	2.44
 Release:	1.%{commit_short}%{dist}
 Summary:	WiringPi is a Wiring library written in C and should be usable from C++.
 
@@ -76,6 +76,9 @@ popd
 %{_mandir}/man1/*.1.*
 
 %changelog
+* Thu Jul 13 2017 Vaughan <devel at agrez.net> - 2.44-1.96344ff
+- New release 2.44 (git snapshot: 96344ff7125182989f98d3be8d111952a8f74e15)
+
 * Mon Jan 02 2017 Vaughan <devel at agrez.net> - 2.36-1.b1dfc18
 - New release 2.36 (git snapshot: b1dfc186efe327aa1d59de43ef631a2fa24e7c95)
 - Don't limit Exclusive arch to just armv7hl
