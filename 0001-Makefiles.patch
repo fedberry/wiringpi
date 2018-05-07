@@ -1,6 +1,20 @@
---- a/devLib/Makefile	2015-09-08 16:30:40.000000000 +0100
-+++ b/devLib/Makefile	2015-09-08 16:58:18.569199557 +0100
-@@ -37,7 +37,7 @@
+From a38729004cab1103cf5ba91ac1758afbf4c8e148 Mon Sep 17 00:00:00 2001
+Message-Id: <a38729004cab1103cf5ba91ac1758afbf4c8e148.1525705946.git.devel@agrez.net>
+From: Vaughan Agrez <devel@agrez.net>
+Date: Mon, 7 May 2018 23:12:20 +0800
+Subject: [PATCH] Update Makefiles
+
+---
+ devLib/Makefile   | 13 ++++++++++++-
+ gpio/Makefile     | 10 +++++++++-
+ wiringPi/Makefile | 11 +++++++++++
+ 3 files changed, 32 insertions(+), 2 deletions(-)
+
+diff --git a/devLib/Makefile b/devLib/Makefile
+index cf665d6..bc54dd8 100644
+--- a/devLib/Makefile
++++ b/devLib/Makefile
+@@ -37,7 +37,7 @@ DYNAMIC=libwiringPiDev.so.$(VERSION)
  #DEBUG	= -g -O0
  DEBUG	= -O2
  CC	= gcc
@@ -9,7 +23,7 @@
  DEFS	= -D_GNU_SOURCE
  CFLAGS	= $(DEBUG) $(DEFS) -Wformat=2 -Wall -Winline $(INCLUDE) -pipe -fPIC
  
-@@ -73,6 +73,7 @@
+@@ -73,6 +73,7 @@ $(DYNAMIC):	$(OBJ)
  .c.o:
  	$Q echo [Compile] $<
  	$Q $(CC) -c $(CFLAGS) $< -o $@
@@ -17,7 +31,7 @@
  
  .PHONY:	clean
  clean:
-@@ -113,6 +114,15 @@
+@@ -115,6 +116,16 @@ install-deb:	$(DYNAMIC)
  	install -m 0755 libwiringPiDev.so.$(VERSION)				~/wiringPi/debian-template/wiringPi/usr/lib/libwiringPiDev.so.$(VERSION)
  	ln -sf ~/wiringPi/debian-template/wiringPi/usr/lib/libwiringPiDev.so.$(VERSION)	~/wiringPi/debian-template/wiringPi/usr/lib/libwiringPiDev.so
  
@@ -29,15 +43,27 @@
 +	@echo "[Install Dynamic Lib]"
 +	@install -m 0755 -d						$(DESTDIR)$(PREFIX)/lib
 +	@install -m 0755 libwiringPiDev.so.$(VERSION)			$(DESTDIR)$(PREFIX)/lib/libwiringPiDev.so.$(VERSION)
++	@ln -sf $(PREFIX)/lib/libwiringPiDev.so.$(VERSION)		$(DESTDIR)$(PREFIX)/lib/libwiringPiDev.so
 +
  .PHONY:	uninstall
  uninstall:
  	$Q echo "[UnInstall]"
---- a/gpio/Makefile	2015-09-08 16:30:40.000000000 +0100
-+++ b/gpio/Makefile	2015-09-08 16:46:06.687665762 +0100
-@@ -80,6 +80,14 @@
- 	$Q mkdir -p		$(DESTDIR)$(PREFIX)/man/man1
- 	$Q cp gpio.1		$(DESTDIR)$(PREFIX)/man/man1
+diff --git a/gpio/Makefile b/gpio/Makefile
+index 9ec160d..1592b27 100644
+--- a/gpio/Makefile
++++ b/gpio/Makefile
+@@ -33,7 +33,7 @@ endif
+ #DEBUG	= -g -O0
+ DEBUG	= -O2
+ CC	= gcc
+-INCLUDE	= -I$(DESTDIR)$(PREFIX)/include
++INCLUDE	= -I$(DESTDIR)$(PREFIX)/include -I../wiringPi -I../devLib
+ CFLAGS	= $(DEBUG) -Wall -Wextra $(INCLUDE) -Winline -pipe
+ 
+ LDFLAGS	= -L$(DESTDIR)$(PREFIX)/lib
+@@ -80,6 +80,14 @@ endif
+ 	$Q mkdir -p		$(DESTDIR)$(PREFIX)/share/man/man1
+ 	$Q cp gpio.1		$(DESTDIR)$(PREFIX)/share/man/man1
  
 +.PHONY:        install-fedora
 +install-fedora:        gpio
@@ -50,9 +76,11 @@
  .PHONY:	install-deb
  install-deb:	gpio
  	$Q echo "[Install: deb]"
---- a/wiringPi/Makefile	2015-09-08 18:05:24.032753612 +0100
-+++ b/wiringPi/Makefile	2015-09-08 18:05:46.012500667 +0100
-@@ -83,6 +83,7 @@
+diff --git a/wiringPi/Makefile b/wiringPi/Makefile
+index 287fa58..c0bbff3 100644
+--- a/wiringPi/Makefile
++++ b/wiringPi/Makefile
+@@ -80,6 +80,7 @@ $(DYNAMIC):	$(OBJ)
  .c.o:
  	$Q echo [Compile] $<
  	$Q $(CC) -c $(CFLAGS) $< -o $@
@@ -60,7 +88,7 @@
  
  
  .PHONY:	clean
-@@ -137,6 +138,15 @@
+@@ -114,6 +115,16 @@ install-deb:	$(DYNAMIC)
  	install -m 0755 libwiringPi.so.$(VERSION)				~/wiringPi/debian-template/wiringPi/usr/lib/libwiringPi.so.$(VERSION)
  	ln -sf ~/wiringPi/debian-template/wiringPi/usr/lib/libwiringPi.so.$(VERSION)	~/wiringPi/debian-template/wiringPi/usr/lib/libwiringPi.so
  
@@ -72,7 +100,11 @@
 +	@echo "[Install Dynamic Lib]"
 +	@install -m 0755 -d						$(DESTDIR)$(PREFIX)/lib
 +	@install -m 0755 libwiringPi.so.$(VERSION)			$(DESTDIR)$(PREFIX)/lib/libwiringPi.so.$(VERSION)
++	@ln -sf $(PREFIX)/lib/libwiringPi.so.$(VERSION)			$(DESTDIR)$(PREFIX)/lib/libwiringPi.so
 +
  .PHONY:	uninstall
  uninstall:
  	$Q echo "[UnInstall]"
+-- 
+2.14.3
+

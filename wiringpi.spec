@@ -1,81 +1,109 @@
-%global commit_long     96344ff7125182989f98d3be8d111952a8f74e15
+%global commit_long     8d188fa0e00bb8c6ff6eddd07bf92857e9bd533a
 %global commit_short    %(c=%{commit_long}; echo ${c:0:7})
 
-Name:		wiringpi
-Version:	2.44
-Release:	1.%{commit_short}%{dist}
-Summary:	WiringPi is a Wiring library written in C and should be usable from C++.
-
-License:	GPLv3
-URL:		https://git.drogon.net/?p=wiringPi
-#Source0:	https://git.drogon.net/?p=wiringPi;a=snapshot;h=refs/heads/master;sf=tgz
-Source0:	https://git.drogon.net/?p=wiringPi;a=snapshot;h=%{commit_long};sf=tgz#/wiringPi-%{commit_short}.tar.gz
-Patch0:		wiringPi-make.patch
-ExclusiveArch: %{arm}
+Name:       wiringpi
+Version:    2.46
+Release:    1.git%{commit_short}%{dist}
+Summary:    WiringPi is a PIN based GPIO access library for BCM283x SoC devices
+License:    LGPLv3
+URL:        http://wiringpi.com
+Source0:    https://git.drogon.net/?p=wiringPi;a=snapshot;h=%{commit_long};sf=tgz#/wiringPi-%{commit_short}.tar.gz
+Patch0:     0001-Makefiles.patch
+ExclusiveArch:  armv7hl
 
 %description
-WiringPi is a Wiring library written in C and should be usable from C++.
+WiringPi is a PIN based GPIO access library for the BCM2835, BCM2836 and
+BCM2837 SoC devices (Raspberry Pi devices). It is usable from C,
+C++ and RTB (BASIC) as well as many other languages with suitable
+wrappers. The wiringPi gpio utility is used for command line GPIO access.
+
+
+%package libs
+Summary: %{summary}
+
+%description libs
+WiringPi is a PIN based GPIO access library for the BCM2835, BCM2836 and
+BCM2837 SoC devices used in all Raspberry Pi devices. It is usable from C,
+C++ and RTB (BASIC) as well as many other languages with suitable
+wrappers.
+
+
+%package devel
+Summary:    Development libraries for %{name}
+
+%description devel
+WiringPi development libraries to allow GPIO access on a Raspberry Pi from C
+and C++ programs.
+
 
 %prep
-%setup -q -n wiringPi-%{commit_short}
-%patch0 -p1 -b .orig
+%autosetup -p1 -n wiringPi-%{commit_short}
+
 
 %build
-%{?__global_ldflags:LDFLAGS="%__global_ldflags"}
 
-echo "Build WiringPi library"
-pushd wiringPi
-make %{?_smp_mflags} DEBUG="$RPM_OPT_FLAGS" LDFLAGS="$LDFLAGS"
-popd
+# Build libraries
+for i in wiringPi devLib; do
+    pushd $i
+    make %{?_smp_mflags} DEBUG="%{optflags}" LDFLAGS="%{__global_ldflags}"
+    popd
+done
 
-echo "Build WiringPi Devices Library"
-pushd devLib
-make %{?_smp_mflags} DEBUG="$RPM_OPT_FLAGS" LDFLAGS="$LDFLAGS"
-popd
-
-echo "Build GPIO Utility"
+# Build GPIO utility
 pushd gpio
-make %{?_smp_mflags} DEBUG="$RPM_OPT_FLAGS"\
- LDFLAGS="-L../wiringPi -L../devLib $LDFLAGS"\
- C_INCLUDE_PATH=../wiringPi:../devLib:$C_INCLUDE_PATH
+make %{?_smp_mflags} DEBUG="%{optflags}" \
+LDFLAGS="-L../wiringPi -L../devLib %{__global_ldflags}"
 popd
+
 
 %install
+
 rm -rf %{buildroot}
 
-echo "Install WiringPi library"
-pushd wiringPi
-make install-fedora DESTDIR=$RPM_BUILD_ROOT PREFIX=%{_prefix}
-popd
+# Install libraries & GPIO utility
+for i in wiringPi devLib gpio; do
+    pushd $i
+    make install-fedora DESTDIR=%{buildroot} PREFIX=%{_prefix}
+    popd
+done
 
-echo "Install WiringPi Devices Library"
-pushd devLib
-make install-fedora DESTDIR=$RPM_BUILD_ROOT PREFIX=%{_prefix}
-popd
 
-echo "Install GPIO Utility"
-pushd gpio
-make install-fedora DESTDIR=$RPM_BUILD_ROOT PREFIX=%{_prefix}
-popd
+%post libs -p /sbin/ldconfig
 
-pushd $RPM_BUILD_ROOT/%{_libdir}
-ln -sf libwiringPi.so.%{version} libwiringPi.so
-ln -sf libwiringPiDev.so.%{version} libwiringPiDev.so
-popd
 
-%post -p /sbin/ldconfig
-%postun -p /sbin/ldconfig
+%postun libs -p /sbin/ldconfig
 
-%files
-%defattr(-,root,root,-)
-%doc COPYING.LESSER INSTALL People README.TXT VERSION
-%attr(4755,root,root) %{_bindir}/gpio
-%{_includedir}/wiringPi
+
+%files libs
+%defattr(-,root,root)
+%license COPYING.LESSER
 %{_libdir}/libwiringPi.so*
 %{_libdir}/libwiringPiDev.so*
+
+
+%files devel
+%defattr(-,root,root)
+%license COPYING.LESSER
+%dir %{_includedir}/wiringPi
+%{_includedir}/wiringPi/*.h
+%{_libdir}/libwiringPi.so
+%{_libdir}/libwiringPiDev.so
+
+
+%files
+%defattr(-,root,root)
+%license COPYING.LESSER
+%doc People README.TXT VERSION pins/pins.pdf
+%attr(4755,root,root) %{_bindir}/gpio
 %{_mandir}/man1/*.1.*
 
+
 %changelog
+* Mon May 07 2018 Vaughan <devel at agrez.net> - 2.46-1.8d188fa
+- New release 2.46 (git commit: 8d188fa0e00bb8c6ff6eddd07bf92857e9bd533a)
+- Clean up & refactor spec file
+- Update Patch0
+
 * Thu Jul 13 2017 Vaughan <devel at agrez.net> - 2.44-1.96344ff
 - New release 2.44 (git snapshot: 96344ff7125182989f98d3be8d111952a8f74e15)
 
@@ -102,16 +130,3 @@ popd
 
 * Fri Nov 16 2012 Andrew Greene <andrew.greene@senecacollege.ca> - 1-1
 - Updated packaged version and release tags for rpfr18
-
-* Wed Sep 17 2012 Andrew Greene <andrew.greene@senecacollege.ca> - 1.0-4
-- Package updated to include new files gerthboard.h, piNes.h and wiringSerial.h
-
-* Thu Jul 12 2012 Andrew Greene <andrew.greene@senecacollege.ca> - 1.0-3
-- changed the rpm name of from raspberrypi-wiringpi to wiringpi
-
-* Thu Jul 12 2012 Andrew Greene <andrew.greene@senecacollege.ca> - 1.0-2
-- fixed the missing file lcd.h with the correct path for the examples make
-
-* Wed Jul 11 2012 Andrew Greene <agreene@learn.senecac.on.ca> - 1.0-1
-- basic install instructions copied some files to /usr/bin and /usr/lib
-- added a quick hack to fix the examples make error lcd.h file not in the right location
