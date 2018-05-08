@@ -29,7 +29,7 @@ wrappers.
 
 
 %package devel
-Summary:    Development libraries for %{name}
+Summary: Development libraries for %{name}
 
 %description devel
 WiringPi development libraries to allow GPIO access on a Raspberry Pi from C
@@ -37,6 +37,7 @@ and C++ programs.
 
 
 %prep
+
 %autosetup -p1 -n wiringPi-%{commit_short}
 
 
