@@ -1,20 +1,29 @@
-From a38729004cab1103cf5ba91ac1758afbf4c8e148 Mon Sep 17 00:00:00 2001
-Message-Id: <a38729004cab1103cf5ba91ac1758afbf4c8e148.1525705946.git.devel@agrez.net>
+From ff57f26d13dd5bbd7c6b9b562fb16e07991d4ca0 Mon Sep 17 00:00:00 2001
+Message-Id: <ff57f26d13dd5bbd7c6b9b562fb16e07991d4ca0.1526287488.git.devel@agrez.net>
 From: Vaughan Agrez <devel@agrez.net>
-Date: Mon, 7 May 2018 23:12:20 +0800
-Subject: [PATCH] Update Makefiles
+Date: Mon, 14 May 2018 16:44:42 +0800
+Subject: [PATCH] Update Makefiles for Fedora
 
 ---
- devLib/Makefile   | 13 ++++++++++++-
+ devLib/Makefile   | 15 ++++++++++++++-
  gpio/Makefile     | 10 +++++++++-
- wiringPi/Makefile | 11 +++++++++++
- 3 files changed, 32 insertions(+), 2 deletions(-)
+ wiringPi/Makefile | 13 +++++++++++++
+ 3 files changed, 36 insertions(+), 2 deletions(-)
 
 diff --git a/devLib/Makefile b/devLib/Makefile
-index cf665d6..bc54dd8 100644
+index cf665d6..d605c53 100644
 --- a/devLib/Makefile
 +++ b/devLib/Makefile
-@@ -37,7 +37,7 @@ DYNAMIC=libwiringPiDev.so.$(VERSION)
+@@ -24,6 +24,8 @@
+ VERSION=$(shell cat ../VERSION)
+ DESTDIR?=/usr
+ PREFIX?=/local
++LIBDIR?=/usr/lib
++WIRINGPI_SONAME_SUFFIX=.$(shell printf "%.0f" "$(VERSION)")
+ 
+ LDCONFIG?=ldconfig
+ 
+@@ -37,7 +39,7 @@ DYNAMIC=libwiringPiDev.so.$(VERSION)
  #DEBUG	= -g -O0
  DEBUG	= -O2
  CC	= gcc
@@ -23,7 +32,7 @@ index cf665d6..bc54dd8 100644
  DEFS	= -D_GNU_SOURCE
  CFLAGS	= $(DEBUG) $(DEFS) -Wformat=2 -Wall -Winline $(INCLUDE) -pipe -fPIC
  
-@@ -73,6 +73,7 @@ $(DYNAMIC):	$(OBJ)
+@@ -73,6 +75,7 @@ $(DYNAMIC):	$(OBJ)
  .c.o:
  	$Q echo [Compile] $<
  	$Q $(CC) -c $(CFLAGS) $< -o $@
@@ -31,7 +40,7 @@ index cf665d6..bc54dd8 100644
  
  .PHONY:	clean
  clean:
-@@ -115,6 +116,16 @@ install-deb:	$(DYNAMIC)
+@@ -115,6 +118,16 @@ install-deb:	$(DYNAMIC)
  	install -m 0755 libwiringPiDev.so.$(VERSION)				~/wiringPi/debian-template/wiringPi/usr/lib/libwiringPiDev.so.$(VERSION)
  	ln -sf ~/wiringPi/debian-template/wiringPi/usr/lib/libwiringPiDev.so.$(VERSION)	~/wiringPi/debian-template/wiringPi/usr/lib/libwiringPiDev.so
  
@@ -41,9 +50,9 @@ index cf665d6..bc54dd8 100644
 +	@install -m 0755 -d						$(DESTDIR)$(PREFIX)/include/wiringPi
 +	@install -m 0644 $(HEADERS)					$(DESTDIR)$(PREFIX)/include/wiringPi
 +	@echo "[Install Dynamic Lib]"
-+	@install -m 0755 -d						$(DESTDIR)$(PREFIX)/lib
-+	@install -m 0755 libwiringPiDev.so.$(VERSION)			$(DESTDIR)$(PREFIX)/lib/libwiringPiDev.so.$(VERSION)
-+	@ln -sf $(PREFIX)/lib/libwiringPiDev.so.$(VERSION)		$(DESTDIR)$(PREFIX)/lib/libwiringPiDev.so
++	@install -m 0755 -d						$(DESTDIR)$(LIBDIR)
++	@install -m 0755 libwiringPiDev.so.$(VERSION)			$(DESTDIR)$(LIBDIR)/libwiringPiDev.so.$(VERSION)
++	@ln -sf $(LIBDIR)/libwiringPiDev.so.$(VERSION)			$(DESTDIR)$(LIBDIR)/libwiringPiDev.so$(WIRINGPI_SONAME_SUFFIX)
 +
  .PHONY:	uninstall
  uninstall:
@@ -77,10 +86,19 @@ index 9ec160d..1592b27 100644
  install-deb:	gpio
  	$Q echo "[Install: deb]"
 diff --git a/wiringPi/Makefile b/wiringPi/Makefile
-index 287fa58..c0bbff3 100644
+index 287fa58..39532e4 100644
 --- a/wiringPi/Makefile
 +++ b/wiringPi/Makefile
-@@ -80,6 +80,7 @@ $(DYNAMIC):	$(OBJ)
+@@ -24,6 +24,8 @@
+ VERSION=$(shell cat ../VERSION)
+ DESTDIR?=/usr
+ PREFIX?=/local
++LIBDIR?=/usr/lib
++WIRINGPI_SONAME_SUFFIX=.$(shell printf "%.0f" "$(VERSION)")
+ 
+ LDCONFIG?=ldconfig
+ 
+@@ -80,6 +82,7 @@ $(DYNAMIC):	$(OBJ)
  .c.o:
  	$Q echo [Compile] $<
  	$Q $(CC) -c $(CFLAGS) $< -o $@
@@ -88,7 +106,7 @@ index 287fa58..c0bbff3 100644
  
  
  .PHONY:	clean
-@@ -114,6 +115,16 @@ install-deb:	$(DYNAMIC)
+@@ -114,6 +117,16 @@ install-deb:	$(DYNAMIC)
  	install -m 0755 libwiringPi.so.$(VERSION)				~/wiringPi/debian-template/wiringPi/usr/lib/libwiringPi.so.$(VERSION)
  	ln -sf ~/wiringPi/debian-template/wiringPi/usr/lib/libwiringPi.so.$(VERSION)	~/wiringPi/debian-template/wiringPi/usr/lib/libwiringPi.so
  
@@ -98,9 +116,9 @@ index 287fa58..c0bbff3 100644
 +	@install -m 0755 -d						$(DESTDIR)$(PREFIX)/include/wiringPi
 +	@install -m 0644 $(HEADERS)					$(DESTDIR)$(PREFIX)/include/wiringPi
 +	@echo "[Install Dynamic Lib]"
-+	@install -m 0755 -d						$(DESTDIR)$(PREFIX)/lib
-+	@install -m 0755 libwiringPi.so.$(VERSION)			$(DESTDIR)$(PREFIX)/lib/libwiringPi.so.$(VERSION)
-+	@ln -sf $(PREFIX)/lib/libwiringPi.so.$(VERSION)			$(DESTDIR)$(PREFIX)/lib/libwiringPi.so
++	@install -m 0755 -d						$(DESTDIR)$(LIBDIR)
++	@install -m 0755 libwiringPi.so.$(VERSION)			$(DESTDIR)$(LIBDIR)/libwiringPi.so.$(VERSION)
++	@ln -sf $(LIBDIR)/libwiringPi.so.$(VERSION)			$(DESTDIR)$(LIBDIR)/libwiringPi.so$(WIRINGPI_SONAME_SUFFIX)
 +
  .PHONY:	uninstall
  uninstall:
