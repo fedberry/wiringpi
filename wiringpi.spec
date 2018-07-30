@@ -4,13 +4,16 @@
 
 Name:       wiringpi
 Version:    2.46
-Release:    2%{?dist}
+Release:    3%{?dist}
 Summary:    PIN based GPIO access library for BCM283x SoC devices
 License:    LGPLv3
 URL:        http://wiringpi.com
 Source0:    https://git.drogon.net/?p=wiringPi;a=snapshot;h=%{commit_long};sf=tgz#/wiringPi-%{commit_short}.tar.gz
 Patch0:     0001-Makefiles.patch
 ExclusiveArch: %{arm}
+Obsoletes:  %{name}-libs
+Conflicts:  %{name}-libs
+
 
 %description
 WiringPi is a PIN based GPIO access library for the BCM2835, BCM2836 and
@@ -125,6 +128,9 @@ done
 
 
 %changelog
+* Mon Jul 30 2018 Vaughan Agrez <devel@agrez.net> - 2.46-3
+- Add conflicts/obsoletes for old wiringpi-libs package
+
 * Sat Jul 07 2018 Vaughan Agrez <devel@agrez.net> - 2.46-2
 - Major refactor of spec file
 - Update Patch0 (Makefiles.patch)
