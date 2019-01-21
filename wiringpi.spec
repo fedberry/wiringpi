@@ -14,6 +14,7 @@ ExclusiveArch: %{arm}
 Obsoletes:  %{name}-libs
 Conflicts:  %{name}-libs
 
+BuildRequires: gcc
 
 %description
 WiringPi is a PIN based GPIO access library for the BCM2835, BCM2836 and
@@ -128,6 +129,8 @@ done
 
 
 %changelog
+- Add build requires for gcc (Hans Niedermann)
+
 * Mon Jul 30 2018 Vaughan Agrez <devel@agrez.net> - 2.46-3
 - Add conflicts/obsoletes for old wiringpi-libs package
 
