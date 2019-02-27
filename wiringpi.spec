@@ -4,7 +4,7 @@
 
 Name:       wiringpi
 Version:    2.46
-Release:    3%{?dist}
+Release:    4%{?dist}
 Summary:    PIN based GPIO access library for BCM283x SoC devices
 License:    LGPLv3
 URL:        http://wiringpi.com
@@ -137,7 +137,9 @@ popd
 
 
 %changelog
+* Wed Feb 27 2019 Vaughan Agrez <devel@agrez.net> - 2.46-4
 - Add build requires for gcc (Hans Niedermann)
+- Add symlinks for *.so in -devel package (Hans Niedermann)
 
 * Mon Jul 30 2018 Vaughan Agrez <devel@agrez.net> - 2.46-3
 - Add conflicts/obsoletes for old wiringpi-libs package
